@@ -39,7 +39,7 @@ export function Header() {
         initial={{ y: -80, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.7, ease }}
-        className={`hdr-root ${scrolled ? "hdr-scrolled" : ""}`}
+        className={`hdr-root ${scrolled ? "hdr-scrolled" : ""} ${open ? "hdr-open" : ""}`}
       >
         <div className="hdr-inner">
           {/* Logo */}
@@ -129,51 +129,52 @@ export function Header() {
       {/* Mobile menu */}
       <AnimatePresence>
         {open && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.25 }}
-              className="hdr-overlay"
-              onClick={() => setOpen(false)}
-            />
-            <motion.div
-              initial={{ opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.22, ease }}
-              className="hdr-mobile-menu"
-            >
-              <div className="hdr-mobile-inner">
-                {NAV.map((n, i) => (
-                  <motion.a
-                    key={n.href}
-                    href={n.href}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.04, duration: 0.22 }}
-                    className="hdr-mobile-link"
-                    onClick={() => setOpen(false)}
-                  >
-                    {n.label}
-                  </motion.a>
-                ))}
+          <motion.div
+            initial={{ opacity: 0, scale: 1.02 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 1.02 }}
+            transition={{ duration: 0.25, ease }}
+            className="hdr-mobile-menu"
+            onClick={() => setOpen(false)}
+          >
+            <div className="hdr-mobile-inner" onClick={(e) => e.stopPropagation()}>
+              {NAV.map((n, i) => (
                 <motion.a
-                  href={whatsappUrl()}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  initial={{ opacity: 0, y: 8 }}
+                  key={n.href}
+                  href={n.href}
+                  initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: NAV.length * 0.04, duration: 0.22 }}
-                  className="hdr-mobile-cta"
+                  transition={{ delay: i * 0.04 + 0.08, duration: 0.3, ease }}
+                  className="hdr-mobile-link"
                   onClick={() => setOpen(false)}
                 >
-                  Agendar avaliação
+                  {n.label}
                 </motion.a>
-              </div>
-            </motion.div>
-          </>
+              ))}
+              <motion.a
+                href={whatsappUrl()}
+                target="_blank"
+                rel="noopener noreferrer"
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: NAV.length * 0.04 + 0.08, duration: 0.3, ease }}
+                className="hdr-mobile-cta"
+                onClick={() => setOpen(false)}
+              >
+                Agendar avaliação
+              </motion.a>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 0.5 }}
+                transition={{ delay: (NAV.length + 1) * 0.04 + 0.08, duration: 0.3 }}
+                className="hdr-mobile-footer"
+              >
+                <span>Salvador, BA</span>
+                <span className="hdr-mobile-separator">•</span>
+                <span>Clínica Premium</span>
+              </motion.div>
+            </div>
+          </motion.div>
         )}
       </AnimatePresence>
 
@@ -301,58 +302,87 @@ export function Header() {
         .hdr-hamburger-icon { width: 22px; height: 22px; }
         @media (min-width: 1024px) { .hdr-hamburger { display: none; } }
 
-        /* ── OVERLAY ── */
-        .hdr-overlay {
-          position: fixed;
-          inset: 0;
-          background: rgba(10,15,30,0.25);
-          backdrop-filter: blur(4px);
-          z-index: 40;
+        /* ── MOBILE MENU (FULL SCREEN) ── */
+        .hdr-root.hdr-open {
+          background: transparent !important;
+          backdrop-filter: none !important;
+          -webkit-backdrop-filter: none !important;
+          box-shadow: none !important;
+        }
+        .hdr-open .hdr-cta-wrap {
+          display: none !important;
         }
 
-        /* ── MOBILE MENU ── */
         .hdr-mobile-menu {
           position: fixed;
-          top: 68px;
-          left: 0; right: 0;
-          z-index: 50;
-          background: color-mix(in oklab, var(--background) 96%, transparent);
-          backdrop-filter: saturate(180%) blur(24px);
-          -webkit-backdrop-filter: saturate(180%) blur(24px);
-          border-bottom: 1px solid oklch(0.18 0.04 250 / 0.07);
-          box-shadow: 0 12px 40px rgba(15,23,42,0.10);
+          inset: 0;
+          height: 100dvh;
+          width: 100vw;
+          z-index: 45;
+          background: color-mix(in oklab, var(--background) 95%, black 5%);
+          backdrop-filter: blur(32px) saturate(190%);
+          -webkit-backdrop-filter: blur(32px) saturate(190%);
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
         .hdr-mobile-inner {
-          max-width: 80rem;
-          margin: 0 auto;
-          padding: 1rem 1.25rem 1.25rem;
+          width: 100%;
+          max-width: 28rem;
+          padding: 2rem;
           display: flex;
           flex-direction: column;
-          gap: 0.25rem;
+          align-items: center;
+          justify-content: center;
+          gap: 1rem;
         }
         .hdr-mobile-link {
-          padding: 0.75rem 1rem;
-          border-radius: 12px;
-          font-size: 0.9rem;
-          font-weight: 450;
+          padding: 0.5rem 2rem;
+          font-size: 2.25rem;
+          font-weight: 400;
+          font-family: var(--font-display);
           color: var(--foreground);
           text-decoration: none;
-          transition: background 0.18s ease;
+          text-align: center;
+          letter-spacing: -0.02em;
+          transition: color 0.25s ease, transform 0.25s ease;
         }
-        .hdr-mobile-link:hover { background: oklch(0.18 0.04 250 / 0.05); }
+        .hdr-mobile-link:hover {
+          color: var(--primary);
+          transform: scale(1.04);
+        }
         .hdr-mobile-cta {
-          margin-top: 0.5rem;
-          padding: 0.9rem 1rem;
-          border-radius: 14px;
-          font-size: 0.9rem;
+          margin-top: 1.5rem;
+          padding: 0.9rem 2.5rem;
+          border-radius: 100px;
+          font-size: 0.95rem;
           font-weight: 600;
           text-align: center;
           background: linear-gradient(135deg, oklch(0.28 0.09 258) 0%, oklch(0.40 0.12 258) 100%);
           color: #fff;
           text-decoration: none;
-          transition: opacity 0.2s ease;
+          box-shadow: 0 10px 30px oklch(0.28 0.09 258 / 0.2);
+          transition: all 0.25s ease;
         }
-        .hdr-mobile-cta:hover { opacity: 0.9; }
+        .hdr-mobile-cta:hover {
+          opacity: 0.95;
+          transform: translateY(-1px);
+          box-shadow: 0 12px 35px oklch(0.28 0.09 258 / 0.3);
+        }
+        .hdr-mobile-footer {
+          margin-top: 3.5rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.75rem;
+          font-size: 0.75rem;
+          color: var(--muted-foreground);
+          letter-spacing: 0.05em;
+          text-transform: uppercase;
+        }
+        .hdr-mobile-separator {
+          color: var(--mint);
+        }
       `}</style>
     </>
   );
